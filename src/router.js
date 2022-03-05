@@ -11,7 +11,7 @@ import NotFound from './pages/NotFound.vue';
 
 const router = createRouter({
   history: createWebHistory(),
-  router: [
+  routes: [
     { path: '/', redirect: '/coaches' }, // If user loads '/' route, then will be redirected to '/coaches' route
     { path: '/coaches', component: CoachesList },
     {
