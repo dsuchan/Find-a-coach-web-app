@@ -5,19 +5,29 @@
       <button>Refresh</button>
       <router-link to="/register">Register as Coach</router-link>
     </div>
-    <!-- List of coaches will be displayed only if hasCoaches is a truthy value, otherwise the h3 tag will be displayed. -->
     <ul v-if="hasCoaches">
-      <!-- Displaying every coach with v-for, looping through the data, which i've got from filteredCoaches computed method -->
-      <li v-for="coach in filteredCoaches" :key="coach.id">
-        {{ coach.firstName }}
-      </li>
+      <!-- Looping through all the available coaches. The the logic for displaying inside-data shown in this components is stored in CoachItem.vue. All the data are able to show thanks to props defined in that component. -->
+      <coach-item
+        v-for="coach in filteredCoaches"
+        :key="coach.id"
+        :id="coach.id"
+        :first-name="coach.firstName"
+        :last-name="coach.lastName"
+        :rate="coach.hourlyRate"
+        :areas="coach.areas"
+      ></coach-item>
     </ul>
     <h3 v-else>No coaches found.</h3>
   </section>
 </template>
 
 <script>
+import CoachItem from '../../components/coaches/CoachItem.vue';
+
 export default {
+  components: {
+    CoachItem,
+  },
   computed: {
     // Getting the coaches data stored in the store
     filteredCoaches() {
@@ -29,3 +39,16 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+}
+</style>
