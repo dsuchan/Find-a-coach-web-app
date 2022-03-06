@@ -3,12 +3,21 @@
     <h3>{{ fullName }}</h3>
     <h4>${{ rate }}/hour</h4>
     <div>
-      <!-- Looping through 'areas' from index.js > state > coaches object -->
-      <span v-for="area in areas" :key="area">{{ area }}</span>
+      <!-- Looping through 'areas' from index.js > state > coaches object. Hence this is <base-badge> component with defined props inside of it, I need to specify these props and link them to the current area I'm looping. -->
+      <base-badge
+        v-for="area in areas"
+        :key="area"
+        :type="area"
+        :title="area"
+      ></base-badge>
     </div>
     <div class="actions">
-      <router-link :to="coachContactLink">Contact</router-link>
-      <router-link :to="coachDetailsLink">View Details</router-link>
+      <!-- Previous <router-link> has been changed to <base-button> and the 'link' prop needed to be added so the Vue can know, which element it should display. The logic of this is stored in BaseButton.vue -->
+      <base-button mode="outline" link :to="coachContactLink"
+        >Contact</base-button
+      >
+      <!-- Previous <router-link> has been changed to <base-button> and the 'link' prop needed to be added so the Vue can know, which element it should display. The logic of this is stored in BaseButton.vue -->
+      <base-button link :to="coachDetailsLink">View Details</base-button>
     </div>
   </li>
 </template>
