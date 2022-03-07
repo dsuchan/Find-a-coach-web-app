@@ -17,6 +17,8 @@ const router = createRouter({
     {
       path: '/coaches/:id',
       component: CoachDetail,
+      // If I add 'props: true', the vue router will pass the value ID holds in the end as a prop to CoachDetail component.
+      props: true,
       children: [
         { path: 'contact', component: ContactCoach }, // /coaches/:id/contact
       ],

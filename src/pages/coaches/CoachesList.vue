@@ -1,5 +1,8 @@
 <template>
-  <section>FILTER</section>
+  <section>
+    <!-- Listening for the emitted custom event which is defined in CoachFilter.vue -->
+    <coach-filter @change-filter="setFilters"></coach-filter>
+  </section>
   <section>
     <base-card>
       <div class="controls">
@@ -27,18 +30,50 @@
 
 <script>
 import CoachItem from '../../components/coaches/CoachItem.vue';
+import CoachFilter from '../../components/coaches/CoachFilter.vue';
 
 export default {
   components: {
     CoachItem,
+    CoachFilter,
+  },
+  data() {
+    return {
+      activeFilters: {
+        frontend: true,
+        backend: true,
+        career: true,
+      },
+    };
   },
   computed: {
     // Getting the coaches data stored in the store
     filteredCoaches() {
-      return this.$store.getters['coaches/coaches']; // 1st 'coaches' is the namespaced name, 2nd 'coaches' is the getter name
+      const coaches = this.$store.getters['coaches/coaches']; // 1st 'coaches' is the namespaced name, 2nd 'coaches' is the getter name
+      // Checking if the checked value in the checkbox is matched with the value in the coach item
+      return coaches.filter((coach) => {
+        if (this.activeFilters.frontend && coach.areas.includes('frontend')) {
+          return true;
+        }
+        if (this.activeFilters.backend && coach.areas.includes('backend')) {
+          return true;
+        }
+        if (this.activeFilters.career && coach.areas.includes('career')) {
+          return true;
+        }
+        // If any of the checked values are not matched, no coach item will be displayed
+        return false;
+      });
     },
     hasCoaches() {
       return this.$store.getters['coaches/hasCoaches']; // Needs to be there as computed method because displaying the list of coaches is dependent on the truthiness of hasCoaches value
+    },
+  },
+  methods: {
+    // Setting the 'updatedFilters' as an argument because that's the kind of data I'm emitting from CoachFilter.vue > 'setFilters' method
+    setFilters(updatedFilters) {
+      // Overwriting the 'activeFilters' to 'updatedFilters' because I always want current data the user selected
+      this.activeFilters = updatedFilters;
     },
   },
 };
