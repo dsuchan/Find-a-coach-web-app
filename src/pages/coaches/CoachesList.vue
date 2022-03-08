@@ -9,7 +9,9 @@
         <!-- Previous <button> has been changed to <base-button> and the 'mode' prop gets in the use differentiate the look of button beside the link.  -->
         <base-button mode="outline">Refresh</base-button>
         <!-- Previous <router-link> has been changed to <base-button> and the 'link' prop needed to be added so the Vue can know, which element it should display. The logic of this is stored in BaseButton.vue -->
-        <base-button link to="/register">Register as Coach</base-button>
+        <base-button v-if="!isCoach" link to="/register"
+          >Register as Coach</base-button
+        >
       </div>
       <ul v-if="hasCoaches">
         <!-- Looping through all the available coaches. The the logic for displaying inside-data shown in this components is stored in CoachItem.vue. All the data are able to show thanks to props defined in that component. -->
@@ -47,6 +49,10 @@ export default {
     };
   },
   computed: {
+    // Reaching for boolean value from getters.js > 'isCoach'. If the returned value is false, the <base-button> with Register will not be displayed.
+    isCoach() {
+      return this.$store.getters['coaches/isCoach'];
+    },
     // Getting the coaches data stored in the store
     filteredCoaches() {
       const coaches = this.$store.getters['coaches/coaches']; // 1st 'coaches' is the namespaced name, 2nd 'coaches' is the getter name
