@@ -9,11 +9,14 @@
         <!-- Previous <button> has been changed to <base-button> and the 'mode' prop gets in the use differentiate the look of button beside the link.  -->
         <base-button mode="outline" @click="loadCoaches">Refresh</base-button>
         <!-- Previous <router-link> has been changed to <base-button> and the 'link' prop needed to be added so the Vue can know, which element it should display. The logic of this is stored in BaseButton.vue -->
-        <base-button v-if="!isCoach" link to="/register"
+        <base-button v-if="!isCoach && !isLoading" link to="/register"
           >Register as Coach</base-button
         >
       </div>
-      <ul v-if="hasCoaches">
+      <div v-if="isLoading">
+        <base-spinner></base-spinner>
+      </div>
+      <ul v-else-if="hasCoaches">
         <!-- Looping through all the available coaches. The the logic for displaying inside-data shown in this components is stored in CoachItem.vue. All the data are able to show thanks to props defined in that component. -->
         <coach-item
           v-for="coach in filteredCoaches"
@@ -41,6 +44,7 @@ export default {
   },
   data() {
     return {
+      isLoading: false,
       activeFilters: {
         frontend: true,
         backend: true,
@@ -72,7 +76,8 @@ export default {
       });
     },
     hasCoaches() {
-      return this.$store.getters['coaches/hasCoaches']; // Needs to be there as computed method because displaying the list of coaches is dependent on the truthiness of hasCoaches value
+      // Needs to be there as computed method because displaying the list of coaches is dependent on the truthiness of hasCoaches value and isLoading value
+      return !this.isLoading && this.$store.getters['coaches/hasCoaches'];
     },
   },
   created() {
@@ -86,8 +91,13 @@ export default {
       this.activeFilters = updatedFilters;
     },
     // Loading coaches data from the vuex store
-    loadCoaches() {
-      this.$store.dispatch('coaches/loadCoaches');
+    async loadCoaches() {
+      // Once the method is executed, the loading status will change to true
+      this.isLoading = true;
+      // Now waiting for dispatch to resolve the request
+      await this.$store.dispatch('coaches/loadCoaches');
+      // Once dispatch is resolved, loading status will change back to false
+      this.isLoading = false;
     },
   },
 };
