@@ -7,7 +7,7 @@
     <base-card>
       <div class="controls">
         <!-- Previous <button> has been changed to <base-button> and the 'mode' prop gets in the use differentiate the look of button beside the link.  -->
-        <base-button mode="outline">Refresh</base-button>
+        <base-button mode="outline" @click="loadCoaches">Refresh</base-button>
         <!-- Previous <router-link> has been changed to <base-button> and the 'link' prop needed to be added so the Vue can know, which element it should display. The logic of this is stored in BaseButton.vue -->
         <base-button v-if="!isCoach" link to="/register"
           >Register as Coach</base-button
@@ -75,11 +75,19 @@ export default {
       return this.$store.getters['coaches/hasCoaches']; // Needs to be there as computed method because displaying the list of coaches is dependent on the truthiness of hasCoaches value
     },
   },
+  created() {
+    // Coaches data will be loaded once this vue instance is created
+    this.loadCoaches();
+  },
   methods: {
     // Setting the 'updatedFilters' as an argument because that's the kind of data I'm emitting from CoachFilter.vue > 'setFilters' method
     setFilters(updatedFilters) {
       // Overwriting the 'activeFilters' to 'updatedFilters' because I always want current data the user selected
       this.activeFilters = updatedFilters;
+    },
+    // Loading coaches data from the vuex store
+    loadCoaches() {
+      this.$store.dispatch('coaches/loadCoaches');
     },
   },
 };

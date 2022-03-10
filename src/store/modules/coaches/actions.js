@@ -22,14 +22,47 @@ export default {
     // This will be executed only when the fetch above is completed.
     // const responseData = await response.json();
 
-    // Checking if the response was not ok
+    // Error handling
     if (!response.ok) {
-      // error ...
+      // error logic ...
     }
 
     context.commit('registerCoach', {
       ...coachData, // Makes copy of data stored in 'coachData'
       id: userId,
     });
+  },
+
+  // Getting all the data from Firebase. I am not using 'payload' argument so therefore it doesn't need to be passed in.
+  async loadCoaches(context) {
+    const response = await fetch(
+      'https://find-a-coach-db-9c5aa-default-rtdb.firebaseio.com/coaches/.json'
+    );
+    const responseData = await response.json();
+
+    // Error handling
+    if (!response.ok) {
+      // error logic ...
+    }
+
+    // Acquired data from Firebase will be stored here later
+    const coaches = [];
+
+    // Looping through all objects in 'responseData' which represents data stored in Firebase
+    for (const key in responseData) {
+      // Reaching for data stored in Firebase and assigning them to properties identical to 'coachData' object above
+      const coach = {
+        id: key,
+        firstName: responseData[key].firstName,
+        lastName: responseData[key].lastName,
+        description: responseData[key].description,
+        hourlyRate: responseData[key].hourlyRate,
+        areas: responseData[key].areas,
+      };
+      // Pushing the data I've got from Firebase to 'coaches' array created in this instance
+      coaches.push(coach);
+    }
+    // Commiting 'coaches' data as 'setCoaches' to context
+    context.commit('setCoaches', coaches);
   },
 };
