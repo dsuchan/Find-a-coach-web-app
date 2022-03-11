@@ -1,4 +1,8 @@
 <template>
+  <!-- Used for displaying error mesagges to the user. '!!error' converts truthy string to truthy boolean value. I need boolean if using with :show -->
+  <base-dialog :show="!!error" title="An error occured!" @close="handleError">
+    <p>{{ error }}</p>
+  </base-dialog>
   <section>
     <!-- Listening for the emitted custom event which is defined in CoachFilter.vue -->
     <coach-filter @change-filter="setFilters"></coach-filter>
@@ -45,6 +49,7 @@ export default {
   data() {
     return {
       isLoading: false,
+      error: null,
       activeFilters: {
         frontend: true,
         backend: true,
@@ -94,10 +99,19 @@ export default {
     async loadCoaches() {
       // Once the method is executed, the loading status will change to true
       this.isLoading = true;
-      // Now waiting for dispatch to resolve the request
-      await this.$store.dispatch('coaches/loadCoaches');
+      try {
+        // Now waiting for dispatch to resolve the request
+        await this.$store.dispatch('coaches/loadCoaches');
+        // If the request could not be resolved, I'll catch the error here and output some message to the user
+      } catch (error) {
+        this.error = error.message || 'Something went wrong!';
+      }
       // Once dispatch is resolved, loading status will change back to false
       this.isLoading = false;
+    },
+    // Used for closing the <base-dialog> modal
+    handleError() {
+      this.error = null;
     },
   },
 };

@@ -24,7 +24,7 @@ export default {
 
     // Error handling
     if (!response.ok) {
-      // error logic ...
+      // ...
     }
 
     context.commit('registerCoach', {
@@ -42,7 +42,8 @@ export default {
 
     // Error handling
     if (!response.ok) {
-      // error logic ...
+      const error = new Error(responseData.message || 'Failed to fetch!');
+      throw error;
     }
 
     // Acquired data from Firebase will be stored here later
