@@ -1,4 +1,4 @@
-// Here, all the routing logic will be stored
+// ### Here, all the routing logic will be stored
 import { createRouter, createWebHistory } from 'vue-router';
 
 // Importing all the components for all the routes

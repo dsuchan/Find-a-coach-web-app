@@ -6,6 +6,8 @@ export default {
   namespaced: true,
   state() {
     return {
+      // 'lastFetch' will save a timestand whenever I fetch new data
+      lastFetch: null,
       coaches: [
         {
           id: 'c1',

@@ -34,7 +34,11 @@ export default {
   },
 
   // Getting all the data from Firebase. I am not using 'payload' argument so therefore it doesn't need to be passed in.
-  async loadCoaches(context) {
+  async loadCoaches(context, payload) {
+    // Before I send request for fetching the 'coaches' data, I want to check if I should even fetch it. If this 'if' checks is false, I will not send the request and will stick to the data which I currently have in the vuex store.
+    if (!payload.forceRefresh && !context.getters.shouldUpdate) return;
+
+    // If the 'if' check above returns true, I will fetch the data because I don't have any data stored in my vuex store.
     const response = await fetch(
       'https://find-a-coach-db-9c5aa-default-rtdb.firebaseio.com/coaches/.json'
     );
@@ -65,5 +69,7 @@ export default {
     }
     // Commiting 'coaches' data as 'setCoaches' to context
     context.commit('setCoaches', coaches);
+    // Commiting the timestamp as 'setFetchTimestamp'
+    context.commit('setFetchTimestamp');
   },
 };

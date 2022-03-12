@@ -1,40 +1,44 @@
 <template>
-  <!-- Used for displaying error mesagges to the user. '!!error' converts truthy string to truthy boolean value. I need boolean if using with :show -->
-  <base-dialog :show="!!error" title="An error occured!" @close="handleError">
-    <p>{{ error }}</p>
-  </base-dialog>
-  <section>
-    <!-- Listening for the emitted custom event which is defined in CoachFilter.vue -->
-    <coach-filter @change-filter="setFilters"></coach-filter>
-  </section>
-  <section>
-    <base-card>
-      <div class="controls">
-        <!-- Previous <button> has been changed to <base-button> and the 'mode' prop gets in the use differentiate the look of button beside the link.  -->
-        <base-button mode="outline" @click="loadCoaches">Refresh</base-button>
-        <!-- Previous <router-link> has been changed to <base-button> and the 'link' prop needed to be added so the Vue can know, which element it should display. The logic of this is stored in BaseButton.vue -->
-        <base-button v-if="!isCoach && !isLoading" link to="/register"
-          >Register as Coach</base-button
-        >
-      </div>
-      <div v-if="isLoading">
-        <base-spinner></base-spinner>
-      </div>
-      <ul v-else-if="hasCoaches">
-        <!-- Looping through all the available coaches. The the logic for displaying inside-data shown in this components is stored in CoachItem.vue. All the data are able to show thanks to props defined in that component. -->
-        <coach-item
-          v-for="coach in filteredCoaches"
-          :key="coach.id"
-          :id="coach.id"
-          :first-name="coach.firstName"
-          :last-name="coach.lastName"
-          :rate="coach.hourlyRate"
-          :areas="coach.areas"
-        ></coach-item>
-      </ul>
-      <h3 v-else>No coaches found.</h3>
-    </base-card>
-  </section>
+  <div>
+    <!-- Used for displaying error mesagges to the user. '!!error' converts truthy string to truthy boolean value. I need boolean if using with :show -->
+    <base-dialog :show="!!error" title="An error occured!" @close="handleError">
+      <p>{{ error }}</p>
+    </base-dialog>
+    <section>
+      <!-- Listening for the emitted custom event which is defined in CoachFilter.vue -->
+      <coach-filter @change-filter="setFilters"></coach-filter>
+    </section>
+    <section>
+      <base-card>
+        <div class="controls">
+          <!-- Previous <button> has been changed to <base-button> and the 'mode' prop gets in the use differentiate the look of button beside the link. Passing 'true' as an argument to the 'loadCoaches' because I always want to be able manually refresh the fetching process on coaches. -->
+          <base-button mode="outline" @click="loadCoaches(true)"
+            >Refresh</base-button
+          >
+          <!-- Previous <router-link> has been changed to <base-button> and the 'link' prop needed to be added so the Vue can know, which element it should display. The logic of this is stored in BaseButton.vue -->
+          <base-button v-if="!isCoach && !isLoading" link to="/register"
+            >Register as Coach</base-button
+          >
+        </div>
+        <div v-if="isLoading">
+          <base-spinner></base-spinner>
+        </div>
+        <ul v-else-if="hasCoaches">
+          <!-- Looping through all the available coaches. The the logic for displaying inside-data shown in this components is stored in CoachItem.vue. All the data are able to show thanks to props defined in that component. -->
+          <coach-item
+            v-for="coach in filteredCoaches"
+            :key="coach.id"
+            :id="coach.id"
+            :first-name="coach.firstName"
+            :last-name="coach.lastName"
+            :rate="coach.hourlyRate"
+            :areas="coach.areas"
+          ></coach-item>
+        </ul>
+        <h3 v-else>No coaches found.</h3>
+      </base-card>
+    </section>
+  </div>
 </template>
 
 <script>
@@ -96,12 +100,14 @@ export default {
       this.activeFilters = updatedFilters;
     },
     // Loading coaches data from the vuex store
-    async loadCoaches() {
+    async loadCoaches(refresh = false) {
       // Once the method is executed, the loading status will change to true
       this.isLoading = true;
       try {
-        // Now waiting for dispatch to resolve the request
-        await this.$store.dispatch('coaches/loadCoaches');
+        // Now waiting for dispatch to resolve the request. Adding second argument 'forceCoaches' which is being checked in actions.js >
+        await this.$store.dispatch('coaches/loadCoaches', {
+          forceRefresh: refresh,
+        });
         // If the request could not be resolved, I'll catch the error here and output some message to the user
       } catch (error) {
         this.error = error.message || 'Something went wrong!';

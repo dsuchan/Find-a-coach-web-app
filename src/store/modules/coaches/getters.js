@@ -12,4 +12,14 @@ export default {
     const userId = rootGetters.userId;
     return coaches.some((coach) => coach.id === userId);
   },
+  shouldUpdate(state) {
+    // Accessing the 'lastFetch' value (timestamp set in mutations.js > setFetchTimestamp)
+    const lastFetch = state.lastFetch;
+    // If 'lastFetch' is false, return true
+    if (!lastFetch) return true;
+    // Getting current time and date
+    const currentTimeStamp = new Date().getTime();
+    // Comparing the previous timestamp with current timestamp. This will return true if the difference between timestamp is more than minute ago. Will return false if it's less than minute ago. Dividing by 1000 because both timestamps are in miliseconds.
+    return (currentTimeStamp - lastFetch) / 1000 > 60;
+  },
 };
